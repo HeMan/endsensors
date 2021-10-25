@@ -1,0 +1,3 @@
+[submodule "picoUART"]
+	path = picoUART
+	url = https://github.com/nerdralph/picoUART.git
