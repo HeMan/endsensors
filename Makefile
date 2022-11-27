@@ -16,8 +16,8 @@ OBJCOPY=avr-objcopy
 CXX=avr-c++
 STRIP=avr-strip
 LD=avr-ld
-CXXFLAGS=-Os -g -flto -std=c++20 -DF_CPU=${F_CPU} -mmcu=${MCU}# -Wall -pedantic
-CFLAGS=-Os -g -DF_CPU=${F_CPU} -mmcu=${MCU}# -Wall -pedantic
+CXXFLAGS=-Os -g -flto -std=c++20 -DF_CPU=${F_CPU} -mmcu=${MCU} -Wall -pedantic
+CFLAGS=-Os -g -DF_CPU=${F_CPU} -mmcu=${MCU} -Wall -pedantic
 CPPFLAGS=${INCLUDES}
 AVRDUDE=avrdude
 TARGET=endsensors

@@ -1,3 +1,9 @@
+#include <avr/io.h>
+#include <util/delay.h>
+#define PU_BAUD_RATE 9600
+#define PU_TX B,0
+#define PU_RX B,0
+
 #include <picoUART.h>
 #include <pu_print.h>
 #define DOWN_SENSOR 2
@@ -15,31 +21,26 @@ enum pin_changes {
   GOING_LOW
 };
 
-// TODO
-void pinMode(int pin);
-unsigned char digitalRead(int pin);
-void delay(long long ms);
+template<uint8_t Pin>
+struct Sensor {
+    int8_t last_state;
 
-class Sensor {
-  private:
-    int pin;
-    int last_state;
-
-  public:
     pin_changes last_change;
-    Sensor() { };
-
-    Sensor(int pin) {
-      this->pin = pin;
+    Sensor() {
+      DDRB = DDRB & ~(1 << Pin);    //set Pin as input
+      PORTB = PORTB | (1 << Pin);  //activate internal pull-up resistor for Pin
       this->last_change = UNCHANGED;
-      pinMode(this->pin);
-      this->last_state = digitalRead(this->pin);
+      this->last_state = this->digitalRead();
     };
 
+    uint8_t digitalRead() {
+      return (PINB & (1 << Pin)) == (1 << Pin);
+    }
+
     pin_changes debounced_read() {
-      unsigned int statemask;
-      unsigned int statecompare;
-      int state = digitalRead(this->pin);
+      uint16_t statemask;
+      uint16_t statecompare;
+      int8_t state = this->digitalRead();
       if (state == this->last_state) {
         return UNCHANGED;
       }
@@ -53,9 +54,9 @@ class Sensor {
       }
 
       while (statemask != statecompare) {
-        state = digitalRead(this->pin);
+        state = this->digitalRead();
         statemask = (statemask << 1) + state;
-        delay(20);
+        _delay_ms(20);
       }
 
       if (statemask == 0xFFFF) {
@@ -71,17 +72,15 @@ class Sensor {
 
 moving_states moving = NO;
 
-Sensor up_sensor;
-Sensor down_sensor;
+Sensor<UP_SENSOR> up_sensor;
+Sensor<DOWN_SENSOR> down_sensor;
 
-int main() {
-  if (digitalRead(DOWN_SENSOR)) {
+int main(void) {
+  if (up_sensor.digitalRead()) {
     prints_P(PSTR("D"));
-  } else if (digitalRead(UP_SENSOR)) {
+  } else if (down_sensor.digitalRead()) {
     prints_P(PSTR("U"));
   }
-  up_sensor = Sensor(UP_SENSOR);
-  down_sensor = Sensor(DOWN_SENSOR);
   while (true) {
     if (up_sensor.debounced_read() == GOING_LOW) {
       moving = CLOSING;
