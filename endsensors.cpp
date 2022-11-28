@@ -1,11 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#define PU_BAUD_RATE 9600
-#define PU_TX B,0
-#define PU_RX B,0
 
-#include <picoUART.h>
-#include <pu_print.h>
+class __FlashStringHelper;
+#include <debugSerial.h>
 #define DOWN_SENSOR 2
 #define UP_SENSOR 3
 
@@ -75,29 +72,31 @@ moving_states moving = NO;
 Sensor<UP_SENSOR> up_sensor;
 Sensor<DOWN_SENSOR> down_sensor;
 
+debugSerial dSerial;
+
 int main(void) {
   if (up_sensor.digitalRead()) {
-    prints_P(PSTR("D"));
+    dSerial.write('D');
   } else if (down_sensor.digitalRead()) {
-    prints_P(PSTR("U"));
+    dSerial.write('U');
   }
   while (true) {
     if (up_sensor.debounced_read() == GOING_LOW) {
       moving = CLOSING;
-      prints_P(PSTR("u"));
+      dSerial.write('u');
     }
     if (up_sensor.debounced_read() == GOING_HIGH) {
       moving = NO;
-      prints_P(PSTR("U"));
+      dSerial.write('U');
     }
 
     if (down_sensor.debounced_read() == GOING_LOW) {
       moving = OPENING;
-      prints_P(PSTR("d"));
+      dSerial.write('d');
     }
     if (down_sensor.debounced_read() == GOING_HIGH) {
       moving = NO;
-      prints_P(PSTR("D"));
+      dSerial.write('D');
     }
 
   };

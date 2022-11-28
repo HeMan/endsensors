@@ -8,7 +8,7 @@ FUSE_L=0x62
 FUSE_H=0xDF
 FUSE_E=0xFF
 F_CPU=800000
-UART=picoUART/src/
+UART=debugSerial
 INCLUDES:=-I${UART}
 AS=avra
 CC=avr-gcc
@@ -23,7 +23,7 @@ AVRDUDE=avrdude
 TARGET=endsensors
 VPATH=${UART}
 
-OBJS := endsensors.o picoUART.o pu_print.o rxISR.o
+OBJS := endsensors.o print.o
 
 all: ${OBJS}
 
