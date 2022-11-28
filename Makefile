@@ -8,8 +8,8 @@ FUSE_L=0x62
 FUSE_H=0xDF
 FUSE_E=0xFF
 F_CPU=800000
-PICOUART=picoUART/src/
-INCLUDES:=-I${PICOUART}
+UART=picoUART/src/
+INCLUDES:=-I${UART}
 AS=avra
 CC=avr-gcc
 OBJCOPY=avr-objcopy
@@ -21,7 +21,7 @@ CFLAGS=-Oz -flto -DF_CPU=${F_CPU} -mmcu=${MCU} -Wall -pedantic
 CPPFLAGS=${INCLUDES}
 AVRDUDE=avrdude
 TARGET=endsensors
-VPATH=${PICOUART}
+VPATH=${UART}
 
 OBJS := endsensors.o picoUART.o pu_print.o rxISR.o
 
